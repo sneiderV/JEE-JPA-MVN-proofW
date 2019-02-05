@@ -14,7 +14,7 @@ public class TarjetaVirtual implements Serializable {
 	@Column(name="numero")
 	private int numero;
 	
-	@Column(name="valor")
+	@Column(name="valor",length=16)
 	private double valor;
 	
 	@ManyToOne(fetch = FetchType.LAZY)

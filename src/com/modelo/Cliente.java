@@ -17,10 +17,10 @@ public class Cliente implements Serializable{
 	@Column(name="id")
 	private int id;
 	
-	@Column(name="nombre")
+	@Column(name="nombre",length=40)
 	private String nombre;
 	
-	@Column(name="direccion")
+	@Column(name="direccion",length=50)
 	private String direccion;
 	
 	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

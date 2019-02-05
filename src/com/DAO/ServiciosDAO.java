@@ -28,7 +28,7 @@ public class ServiciosDAO {
 		manager.getTransaction().begin();
 		
 		Cliente c = new Cliente(id, nombre,direccion);
-		if (!existeCliente(c)) {
+		if (!existeCliente(c) && valor>=0 && valor<5000000) {
 			
 			TarjetaVirtual tv = new TarjetaVirtual(numero, valor, c);
 			if (!existeTarjeta(tv)) {
@@ -44,7 +44,7 @@ public class ServiciosDAO {
 			}
 		}
 		else {
-			System.out.println("El cliente con ese nombre o identificacion ya existe");
+			System.out.println("El cliente con ese nombre o identificacion ya existe o el valor debe ser mayor a 0 y menor a 5M");
 		}
 		
 		manager.close();
@@ -68,7 +68,7 @@ public class ServiciosDAO {
 		//cliente = (Cliente) manager.createQuery("SELECT c FROM Cliente c WHERE c.id="+idCliente).getSingleResult();
 		cliente = darCliente(idCliente);
 		//if (existeCliente(cliente)) {
-		if (cliente!=null) {
+		if (cliente!=null && valor>=0 && valor<5000000) {
 			System.out.println("--> cliente buscado"+cliente);
 			
 			if (!cumpleMaximoDeTarjetas(cliente)) {
@@ -88,7 +88,7 @@ public class ServiciosDAO {
 			}
 		}
 		else {
-			System.out.println("el cliente no existe");
+			System.out.println("el cliente no existe o el valor debe ser mayor a cero y menor a 5M");
 		}
 		
 		manager.getTransaction().commit();
@@ -169,6 +169,22 @@ public class ServiciosDAO {
 		return buscado;
 	}
 	
+	public int darNumTarjetaCliente(int idCliente) {
+		Cliente buscado = null;
+		boolean existe = false;
+		int numTarjetas=0;
+		List<Cliente> clientes = (List<Cliente>)manager.createQuery("SELECT e FROM Cliente e").getResultList();
+		for (int i = 0; i < clientes.size() && !existe ; i++) {
+			if (clientes.get(i).getId()==idCliente) {
+				existe=true;
+				buscado = clientes.get(i);
+				numTarjetas = buscado.getTarjetas().size();
+			}
+		}
+		System.out.println("--> el cliente tiene # "+existe);
+		return numTarjetas;
+	}
+	
 	/**
 	 * 
 	 */
@@ -187,6 +203,15 @@ public class ServiciosDAO {
 		System.out.println("---------------------------------------------------");
 	}
 	
+	public int darNumTarjetas() {
+		int num = 0;
+		manager = emf.createEntityManager();
+		List<TarjetaVirtual> tarjetas = (List<TarjetaVirtual>)manager.createQuery("SELECT t FROM TarjetaVirtual t").getResultList();
+		num = tarjetas.size();
+		manager.close();
+		return num;
+	}
+	
 	/**
 	 * 
 	 */
@@ -203,5 +228,14 @@ public class ServiciosDAO {
 		
 		manager.close();
 		System.out.println("---------------------------------------------------");
+	}
+	
+	public int darNumClientes() {
+		manager = emf.createEntityManager();
+		int totalClientes = 0;
+		List<Cliente> clientes = (List<Cliente>)manager.createQuery("SELECT e FROM Cliente e").getResultList();
+		totalClientes=clientes.size();
+		manager.close();
+		return totalClientes;
 	}
 }
